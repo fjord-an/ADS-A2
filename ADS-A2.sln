@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Task1-SortingBenchmarks", "Task1-SortingBenchmarks\Task1-SortingBenchmarks.csproj", "{3F1436F4-34C7-4785-BC6E-3A37D535FF4F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Task2-Library", "Task2-Library\Task2-Library.csproj", "{24552E46-1B45-436B-81B6-5F32401C2047}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3F1436F4-34C7-4785-BC6E-3A37D535FF4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F1436F4-34C7-4785-BC6E-3A37D535FF4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F1436F4-34C7-4785-BC6E-3A37D535FF4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F1436F4-34C7-4785-BC6E-3A37D535FF4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24552E46-1B45-436B-81B6-5F32401C2047}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24552E46-1B45-436B-81B6-5F32401C2047}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24552E46-1B45-436B-81B6-5F32401C2047}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24552E46-1B45-436B-81B6-5F32401C2047}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
