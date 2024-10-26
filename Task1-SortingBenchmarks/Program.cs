@@ -1,10 +1,10 @@
 ﻿namespace Benchmarks 
 {
-    public class Program
+    public class Program 
     {
         public static void Main(string[] args)
         {
-            throw new NotImplementedException();
+            ReadFile file = new ReadFile(args[0]);
         }
     }
 }
