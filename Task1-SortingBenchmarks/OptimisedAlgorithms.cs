@@ -29,6 +29,7 @@ public class OptimisedAlgorithms : InputFile
             }
             if (!swapped)
             {
+                // Array is already sorted
                 break;
             }
         }

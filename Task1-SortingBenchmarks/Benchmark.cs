@@ -42,9 +42,11 @@ public static class Benchmark
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 foreach(var list in sortedLists)
                     Console.Write($"Sorted: {string.Join(", ", list[0..5])}... ");
+                
                 Console.WriteLine();
                 foreach (var list in originalLists)
                     Console.Write($"Original: {string.Join(", ", list[0..5])}... ");
+                
                 Console.WriteLine("\n");
             }
             else
@@ -71,7 +73,7 @@ public static class Benchmark
         {
             // iterate through the results dictionary and print the time taken to sort the arrays for each file
             foreach (var algorithm in result.Key.AlgorithmPerformances)
-                // print each individual algorithms performance of the InputFile object
+            // print each individual algorithms performance of the InputFile object
             {
                 Console.WriteLine($"{algorithm.Key} took {result.Value.ToReadableString()} to sort {result.Key.FileName}");
             }
