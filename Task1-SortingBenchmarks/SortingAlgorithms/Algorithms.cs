@@ -1,8 +1,11 @@
-namespace Benchmarks;
+using ADS_A2.input;
+using Benchmarks;
+
+namespace ADS_A2.Algorithms;
 
 public class Algorithms : InputFile
 {
-    public Algorithms(string file) : base(file)
+    public Algorithms(string fileName) : base(fileName)
     {
     }
     
@@ -22,6 +25,20 @@ public class Algorithms : InputFile
                     // when the inner loop completes without any swaps, the array is sorted
                 }
             }
+        }
+    }
+
+    public override void MergeSort()
+    // GeeksforGeeks. (2013, March 15). Merge Sort—Data Structure and Algorithms Tutorials. GeeksforGeeks. https://www.geeksforgeeks.org/merge-sort/
+    {
+        int Merge(int[] array, int left, int middle, int right)
+        {
+           return array.Length;
+        }
+        
+        void Sort(int[] array)
+        {
+            
         }
     }
 }

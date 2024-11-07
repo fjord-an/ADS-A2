@@ -1,8 +1,11 @@
-namespace Benchmarks;
+using ADS_A2.input;
+using Benchmarks;
+
+namespace ADS_A2.Algorithms;
 
 public class OptimisedAlgorithms : InputFile
 {
-    public OptimisedAlgorithms(string file) : base(file)
+    public OptimisedAlgorithms(string fileName) : base(fileName)
     {
     }
 
@@ -11,6 +14,10 @@ public class OptimisedAlgorithms : InputFile
         // The bubble sort algorithm can be optimized by breaking the loop if no swaps are made
         // if no swaps are made then the array is already sorted, capping the worst case time complexity
         // from O(n^2) to O(n)
+        
+        // in the case of input2.txt, the partially sorted array, only 1 number needs to be swapped, making 
+        // the time complexity O(1) as the array is already sorted, making a massive improvement in performance
+        // for partially sorted arrays, saving 500 milliseconds to a whole second in some tests (on a laptop with an i7 processor)
         bool swapped;
 
         // reset the swapped flag and breaking the loop if no swaps are made
@@ -33,6 +40,10 @@ public class OptimisedAlgorithms : InputFile
                 break;
             }
         }
-        // if (!swapped) Console.WriteLine("The array is already sorted");
+    }
+
+    public override void MergeSort()
+    {
+        throw new NotImplementedException();   
     }
 }

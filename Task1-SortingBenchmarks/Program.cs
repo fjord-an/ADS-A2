@@ -1,4 +1,7 @@
 ﻿using System.Diagnostics;
+using ADS_A2.Algorithms;
+using ADS_A2.Benchmarker;
+using ADS_A2.input;
 
 namespace Benchmarks
 {
@@ -38,13 +41,15 @@ namespace Benchmarks
 
             // read the files and start the stopwatch
             var file1Optimised = new OptimisedAlgorithms(fileName1);
-            var file2Optimsed = new OptimisedAlgorithms(fileName2);
+            var file2Optimised = new OptimisedAlgorithms(fileName2);
             var file1 = new Algorithms(fileName1);
             var file2 = new Algorithms(fileName2);
             
-            List<InputFile> inputFiles = new() {file1Optimised, file2Optimsed, file1, file2};
+            List<InputFile> inputFiles = new() {file1Optimised, file2Optimised, file1, file2};
 
-            Dictionary<InputFile, TimeSpan> results = Benchmark.Run(inputFiles);
+            List<BenchmarkResult> results = Benchmark.Run(inputFiles);
+            // print the results of the benchmark
+            Benchmark.PrintResults(results);
 
         }
     }
