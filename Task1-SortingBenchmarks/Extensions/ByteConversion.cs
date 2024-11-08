@@ -2,7 +2,7 @@ namespace ADS_A2.Extensions;
 
 public static class ByteSizeConversion
 {
-    public static string ToReadableSize(this long bytes)
+    public static string ToReadableString(this long bytes)
     {
         // This method converts a byte array to a human-readable string
         // It is an extension method that can be called on any byte array object 

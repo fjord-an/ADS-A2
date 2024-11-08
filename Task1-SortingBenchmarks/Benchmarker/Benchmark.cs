@@ -8,13 +8,15 @@ namespace ADS_A2.Benchmarker;
 
 public static class Benchmark
 {
-    public static List<BenchmarkResult> Run(InputFile file1, InputFile file2)
+    public static List<BenchmarkResult> Run(InputFile file1, InputFile file2, List<(AlgorithmType Type, Action<InputFile> Algorithm)> algorithms)
     {
         // overload method to accept two InputFile objects instead of a list
         List<InputFile> files = new() { file1, file2 };
-        return Run(files);
+        
+        return Run(files, algorithms);
     }
-    public static List<BenchmarkResult> Run(List<InputFile> files)
+    
+    public static List<BenchmarkResult> Run(List<InputFile> files, List<(AlgorithmType Type, Action<InputFile> Algorithm)> algorithms)
     // runs and returns the results of the benchmark in a dictionary with the InputFile object as the key
     // and the time taken to sort the array as the value with the algorithm name as the key
     {
@@ -23,9 +25,13 @@ public static class Benchmark
         
         foreach (InputFile file in files)
         {
-            // polymorphic call the BubbleSort method on the InputFile object, performing different algorithms
+            // polymorphic call the different algorithms method on the InputFile object, performing different algorithms
             // depending on the object type, then storing the benchmark results to the dictionary for reference
-            results.Add(MeasureAlgorithm(file));
+            
+            foreach (var (name, algorithm) in algorithms)
+            {
+                results.Add(MeasureAlgorithm(name, file, () => algorithm(file)));
+            }
         }
 
         // Check if the arrays are sorted correctly by comparing the respective files sorted arrays of each algorithm
@@ -70,7 +76,7 @@ public static class Benchmark
         Console.WriteLine("Results:");
         Console.ResetColor();
 
-        foreach (var result in results)
+        foreach (BenchmarkResult result in results)
         {
             // iterate through the results dictionary and print the time taken to sort the arrays for each file
             // print each individual algorithms performance of the InputFile object
@@ -80,14 +86,20 @@ public static class Benchmark
             // NOTE: if memory usage is reading 0, then memory usage is negligable. Such low amounts of memory
             // usage cannot be accurately measured using the GC.GetTotalMemory() method. Such is the case when
             // the optimised partially sorted array is sorted, as only 1 swap is made. Very little memory is used and hard to measure.
+            string algorithmType = result.FileProperties.GetType().Name == "OptimisedAlgorithms" ? "(Optimised)" : "(Basic)";
 
-            Console.Write($"{result.AlgorithmName} took ");
+            Console.Write($"{result.AlgorithmName} {algorithmType} took ");
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Write($"{result.ExecutionTime.ToReadableString()} ");
             Console.ResetColor();
             Console.WriteLine($"to sort {result.FileProperties.FileName}");
             Console.ForegroundColor = ConsoleColor.Gray;
-            Console.WriteLine($"Memory usage: {result.MemoryUsage.ToReadableSize()}");
+            // print the memory usage of the algorithm (and if 0: then usage was too low to measure) often the 
+            // GC.GetTotalMemory() method will round down to 0 when the memory usage is very low (under 4096 bytes)
+            // cyberj0g. (2015, July 23). Answer to “GC.GetTotalMemory minimal resolution” [Online post]. Stack Overflow. https://stackoverflow.com/a/31581701
+            Console.WriteLine(result.MemoryUsage == 0
+                ? "Memory usage: Negligible/Unmeasurable" //else print the memory usage in bytes:
+                : $"Memory usage: {result.MemoryUsage.ToReadableString()}");
             Console.ResetColor();
         }
         
@@ -159,72 +171,72 @@ public static class Benchmark
         // Console.ResetColor();
     }
 
-    private static BenchmarkResult MeasureAlgorithm(InputFile inputFile)
+    private static BenchmarkResult MeasureAlgorithm(AlgorithmType algorithmName, InputFile inputFile, Action runAlgorithm)
     {
-        string algorithmName = inputFile is OptimisedAlgorithms ? "Bubble Sort (Optimised)" : "Bubble Sort";
+        // algorithmName = inputFile is OptimisedAlgorithms ? $"{algorithmName} (Optimised)" : algorithmName;
         Stopwatch sw = new();
         TimeSpan duration;
-        // long memoryUsed = 0;
-        bool noGCRegionStarted = false;
 
-        BenchmarkResult BubbleSort()
+        // method to measure and run the bubble sort algorithm on the input file with memory usage
+        BenchmarkResult RunAndMeasure()
         {
-            // Because this method is run in a no GC (grabage collection) region, must set the forceFullCollection parameter to false, otherwise
-            // the NoGC region will be ended and the memory usage will not be accurate, and errors will be thrown when trying to end the region
-            // TODO link the reference/source/documentation:
+            // Because this method is run in a no GC (garbage collection) region, must set the forceFullCollection parameter to false, otherwise
+            // the NoGC region will be ended and/or the method will not return until G/Collection occurs. Error will be thrown when trying to end the region
+            // dotnet-bot. (n.d.). GC.GetTotalMemory Method (System). Retrieved November 7, 2024, from https://learn.microsoft.com/en-us/dotnet/api/system.gc.gettotalmemory?view=net-8.0
             long initialMemory = GC.GetTotalMemory(false);
+            // ^ get the initial memory usage before sorting the array to calculate
+            // the memory used by the algorithm
             
             // perform the bubble sort algorithm on the input file
             // timing the duration of the algorithm and storing the memory used
             sw.Start();
-            inputFile.BubbleSort();
+            // run the algorithm passed as a parameter (through Action delegate)
+            runAlgorithm();
             sw.Stop();
+            // get the final memory usage after sorting the array (with no GC interference)
             long finalMemory = GC.GetTotalMemory(false);
             
             duration = sw.Elapsed;
             // calculate the memory used by the algorithm (difference between the initial and final)
             long memoryUsed = finalMemory - initialMemory;
             sw.Reset();
-                
+            
             return new BenchmarkResult(memoryUsed, duration, algorithmName, inputFile);
         }
-        
-        // get the initial memory usage before sorting the array to calculate
-        // the memory used by the algorithm
-        // todo GC.Collect() is called to ensure that the memory usage is accurate
-        
+
         // prevent the garbage collector from running during the benchmark up to the specified size
-        // this ensures that the memory usage reading is accurate
-        try
+        // ensuring memory usage reading is accurate. after 100MB, the garbage collector will step in to avoid memory leaks
+        // dotnet-bot. (n.d.). GC.TryStartNoGCRegion Method (System). Retrieved November 7, 2024, from https://learn.microsoft.com/en-us/dotnet/api/system.gc.trystartnogcregion?view=net-8.0
+        
+        // before starting the no GC region, run the garbage collector to free up memory
+        GC.Collect();
+        // start a no GC region, if unable to start (returns false), measure only the time taken to sort the array in the else block
+        if (GC.TryStartNoGCRegion((1024 * 1024) * 100)) // 100MB (1024 * 1024 = 1MB)
         {
-            
-            if (GC.TryStartNoGCRegion(1024 * 1024 * 1000)) // 100MB
+            try
             {
-                noGCRegionStarted = true;
-                
-                return BubbleSort();
+                return RunAndMeasure();
             }
-            else
+            finally
             {
-                // if no GC region cannot be started, measure only the time taken to sort the array
-                sw.Start();
-                inputFile.BubbleSort();
-                sw.Stop();
-                duration = sw.Elapsed;
-                // calculate the memory used by the algorithm (difference between the initial and final)
-                sw.Reset();            
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Error: Could not start a no GC region. No memory usage data will be available.");
-                Console.ResetColor();
-                
-                return new BenchmarkResult(0, duration, algorithmName, inputFile);
+                // end the no GC region
+                GC.EndNoGCRegion();
             }
         }
-        finally
+        else
         {
-            // end the no GC region
-            if (noGCRegionStarted)
-                GC.EndNoGCRegion();
+            // catch no GC region start failure by measuring only the time taken to sort the array
+            sw.Start();
+            inputFile.BubbleSort();
+            sw.Stop();
+            duration = sw.Elapsed;
+            sw.Reset();            
+            Console.ForegroundColor = ConsoleColor.Red;
+            // show an error message if the no GC region cannot be started
+            Console.WriteLine("Error: Could not start a no GC region. No memory usage data will be available.");
+            Console.ResetColor();
+            
+            return new BenchmarkResult(0, duration, algorithmName, inputFile);
         }
     }
 }

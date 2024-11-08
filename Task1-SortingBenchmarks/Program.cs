@@ -45,9 +45,18 @@ namespace Benchmarks
             var file1 = new Algorithms(fileName1);
             var file2 = new Algorithms(fileName2);
             
-            List<InputFile> inputFiles = new() {file1Optimised, file2Optimised, file1, file2};
+            List<InputFile> inputFiles = new() {file1, file1Optimised, file2, file2Optimised};
+            
+            // create a list of algorithms to benchmark with named elements in a tuple
+            List<(AlgorithmType Type, Action<InputFile> Algorithm)> algorithms = new()
+            {
+                (AlgorithmType.BubbleSort, file => file.BubbleSort()),
+                (AlgorithmType.MergeSort, file => file.MergeSort())
+            };
+            
+            List<BenchmarkResult> results = Benchmark.Run(inputFiles, algorithms);
 
-            List<BenchmarkResult> results = Benchmark.Run(inputFiles);
+            // List<BenchmarkResult> results = Benchmark.Run(inputFiles);
             // print the results of the benchmark
             Benchmark.PrintResults(results);
 

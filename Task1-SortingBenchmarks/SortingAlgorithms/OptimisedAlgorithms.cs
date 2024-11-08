@@ -43,7 +43,80 @@ public class OptimisedAlgorithms : InputFile
     }
 
     public override void MergeSort()
+    // Object Oriented Adaptation of the functional Merge Sort Algorithm
+    // GeeksforGeeks. (2013, March 15). Merge Sort—Data Structure and Algorithms Tutorials. GeeksforGeeks. https://www.geeksforgeeks.org/merge-sort/
     {
-        throw new NotImplementedException();   
+        void Merge(int[] array, int left, int middle, int right)
+        {
+            int n1 = middle - left + 1; // no of elements in the left array (with zero based index adjustment)
+            int n2 = right - middle;
+            
+            int[] leftArray = new int[n1];
+            int[] rightArray = new int[n2];
+            
+            
+            int i, j, k; // loop indices 
+            
+            // copy the elements from the main array to the left and right arrays
+            // splitting them into two
+            for (i = 0; i < n1; i++)
+                leftArray[i] = Numbers[left + i];
+            for (j = 0; j < n2; j++)
+                rightArray[j] = Numbers[middle + 1 + j];
+
+            // reset the indices
+            i = 0;
+            j = 0;
+            k = left;
+
+            // merge the arrays back together in order, sorting the numbers.
+            while (i < n1 && j < n2)
+            {
+                if (leftArray[i] <= rightArray[j])
+                {
+                    array[k] = leftArray[i];
+                    i++;
+                }
+                else
+                {
+                    array[k] = rightArray[j];
+                    j++;
+                }
+                k++;
+            }
+            
+            // Copy remaining of L[]
+            while (i < n1) {
+                array[k] = leftArray[i];
+                i++;
+                k++;
+            }
+    
+            // Copy remaining elements
+            // of R[] if any
+            while (j < n2) {
+                array[k] = rightArray[j];
+                j++;
+                k++;
+            }
+        }
+        
+        void Sort(int[] array, int left, int right)
+        {
+            
+            if (left < right) // will recursively loop until the elements are seperated (1 < 1 = false)
+            // the base case will stop when the left index is greater than the right index
+            {
+                int middle = left + (right - left) / 2;
+                
+                Sort(array, left, middle);
+                Sort(array, middle + 1, right);
+
+                Merge(array, left, middle, right);
+            }
+        }
+        
+        Sort(Numbers, 0, Numbers.Length - 1); 
+        // todo right index of the array - 1 because the first number is accounted for?
     }
 }
