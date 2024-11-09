@@ -30,6 +30,8 @@ public static class Benchmark
             
             foreach (var (name, algorithm) in algorithms)
             {
+                // using an anonymous function to pass the algorithm as a parameter to the MeasureAlgorithm method
+                // for each different algorithm, measure the time taken to sort the array
                 results.Add(MeasureAlgorithm(name, file, () => algorithm(file)));
             }
         }

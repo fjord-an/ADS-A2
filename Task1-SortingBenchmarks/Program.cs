@@ -45,13 +45,36 @@ namespace Benchmarks
             var file1 = new Algorithms(fileName1);
             var file2 = new Algorithms(fileName2);
             
-            List<InputFile> inputFiles = new() {file1, file1Optimised, file2, file2Optimised};
+            // List<InputFile> inputFiles = new()
+            // {
+            //     file1, file1Optimised, file2, file2Optimised
+            //     
+            // };
+
+            
+            // create separate instances for each sorting algorithm
+            var file1OptimisedBubble = new OptimisedAlgorithms(fileName1);
+            var file1OptimisedMerge = new OptimisedAlgorithms(fileName1);
+            var file2OptimisedBubble = new OptimisedAlgorithms(fileName2);
+            var file2OptimisedMerge = new OptimisedAlgorithms(fileName2);
+
+            var file1Bubble = new Algorithms(fileName1);
+            var file1Merge = new Algorithms(fileName1);
+            var file2Bubble = new Algorithms(fileName2);
+            var file2Merge = new Algorithms(fileName2);
+            
+            // create a list of algorithms to benchmark with named elements in a tuple
+            List<InputFile> inputFiles = new()
+            {
+                file1Bubble, file1Merge, file2Bubble, file2Merge,
+                file1OptimisedBubble, file1OptimisedMerge, file2OptimisedBubble, file2OptimisedMerge
+            };
             
             // create a list of algorithms to benchmark with named elements in a tuple
             List<(AlgorithmType Type, Action<InputFile> Algorithm)> algorithms = new()
             {
-                (AlgorithmType.BubbleSort, file => file.BubbleSort()),
-                (AlgorithmType.MergeSort, file => file.MergeSort())
+                (AlgorithmType.BubbleSort, testRun => testRun.BubbleSort()),
+                (AlgorithmType.MergeSort, testRun => testRun.MergeSort())
             };
             
             List<BenchmarkResult> results = Benchmark.Run(inputFiles, algorithms);
@@ -59,7 +82,6 @@ namespace Benchmarks
             // List<BenchmarkResult> results = Benchmark.Run(inputFiles);
             // print the results of the benchmark
             Benchmark.PrintResults(results);
-
         }
     }
 }
