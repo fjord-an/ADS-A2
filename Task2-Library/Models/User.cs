@@ -1,4 +1,4 @@
-namespace Library;
+namespace Task2_Library.Models;
 
 public class User
 {

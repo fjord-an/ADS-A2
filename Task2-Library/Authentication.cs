@@ -1,3 +1,5 @@
+using Task2_Library.Models;
+
 namespace Library;
 
 public static class Authentication

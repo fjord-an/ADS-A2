@@ -1,4 +1,6 @@
-﻿namespace Library
+﻿using Task2_Library.Models;
+
+namespace Library
 {
     public class Program
     {

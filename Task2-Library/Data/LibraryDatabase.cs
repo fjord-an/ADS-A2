@@ -1,6 +1,6 @@
-using System.Globalization;
+using Task2_Library.Models;
 
-namespace Library;
+namespace Task2_Library.Data;
 
 public sealed class LibraryDatabase
 // the class is sealed to prevent inheritance, as it is a singleton class

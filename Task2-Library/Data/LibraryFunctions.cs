@@ -1,4 +1,6 @@
-namespace Library;
+using Task2_Library.Models;
+
+namespace Task2_Library.Data;
 
 public class LibraryFunctions
 {
