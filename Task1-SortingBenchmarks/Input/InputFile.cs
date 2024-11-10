@@ -22,13 +22,9 @@ public abstract class InputFile
             
             if (!File.Exists(FilePath))
                 throw new FileNotFoundException("File not found");
-            
-            Parse(FilePath);
-            
-            // AlgorithmPerformances = new BenchmarkResult(0, TimeSpan.Zero, AlgorithmType.BubbleSort,this); 
         }
 
-        private void Parse(string path)
+        public void Parse(string path)
         {
             using(StreamReader reader = new (path))
             {

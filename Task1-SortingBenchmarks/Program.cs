@@ -10,8 +10,8 @@ namespace Benchmarks
         public static void Main(string[] args)
         {
             // default file names
-            string fileName1 = "a2_task1_input1.txt";
-            string fileName2 = "a2_task1_input2.txt";
+            string fileName1 = "unsorted_numbers.txt";
+            string fileName2 = "partially_sorted_numbers.txt";
 
             // check if the user has provided the file names as arguments
             switch (args.Length)
@@ -39,49 +39,51 @@ namespace Benchmarks
                     return;
             }
 
-            // read the files and start the stopwatch
+            // Check if files are valid
+            fileName1 = ValidateFile(fileName1);
+            fileName2 = ValidateFile(fileName2);
+            
+            
+            // create a list of algorithms to benchmark with named elements in a tuple
+            List<(AlgorithmType Type, Action<InputFile> Algorithm)> algorithms = new()
+            {
+                // these Action delegates are used to pass the method as a parameter to
+                // the MeasureAlgorithm method for code reuse
+                (AlgorithmType.BubbleSort, testRun => testRun.BubbleSort()),
+                (AlgorithmType.MergeSort, testRun => testRun.MergeSort())
+            };
+            
+            // read unique instances of the input files so that the same file is not sorted multiple times
             var file1Optimised = new OptimisedAlgorithms(fileName1);
             var file2Optimised = new OptimisedAlgorithms(fileName2);
             var file1 = new Algorithms(fileName1);
             var file2 = new Algorithms(fileName2);
             
-            // List<InputFile> inputFiles = new()
-            // {
-            //     file1, file1Optimised, file2, file2Optimised
-            //     
-            // };
-
-            
-            // create separate instances for each sorting algorithm
-            var file1OptimisedBubble = new OptimisedAlgorithms(fileName1);
-            var file1OptimisedMerge = new OptimisedAlgorithms(fileName1);
-            var file2OptimisedBubble = new OptimisedAlgorithms(fileName2);
-            var file2OptimisedMerge = new OptimisedAlgorithms(fileName2);
-
-            var file1Bubble = new Algorithms(fileName1);
-            var file1Merge = new Algorithms(fileName1);
-            var file2Bubble = new Algorithms(fileName2);
-            var file2Merge = new Algorithms(fileName2);
-            
-            // create a list of algorithms to benchmark with named elements in a tuple
+            // create a list of input files to benchmark
             List<InputFile> inputFiles = new()
             {
-                file1Bubble, file1Merge, file2Bubble, file2Merge,
-                file1OptimisedBubble, file1OptimisedMerge, file2OptimisedBubble, file2OptimisedMerge
+                file1, file1Optimised, file2, file2Optimised
             };
-            
-            // create a list of algorithms to benchmark with named elements in a tuple
-            List<(AlgorithmType Type, Action<InputFile> Algorithm)> algorithms = new()
-            {
-                (AlgorithmType.BubbleSort, testRun => testRun.BubbleSort()),
-                (AlgorithmType.MergeSort, testRun => testRun.MergeSort())
-            };
+
             
             List<BenchmarkResult> results = Benchmark.Run(inputFiles, algorithms);
 
-            // List<BenchmarkResult> results = Benchmark.Run(inputFiles);
             // print the results of the benchmark
-            Benchmark.PrintResults(results);
+            PrintResults.Display(results);
+        }
+        
+       
+        private static string ValidateFile(string fileName)
+        {
+            while (!File.Exists(fileName))
+            {
+                Console.WriteLine($"File '{fileName}' not found. Please enter the relative directory to load the file:");
+                string relativeDirectory = Console.ReadLine();
+                Console.WriteLine("Please enter the filename:");
+                string newFileName = Console.ReadLine();
+                fileName = Path.Combine(relativeDirectory, newFileName);
+            }
+            return fileName;
         }
     }
 }

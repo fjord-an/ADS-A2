@@ -70,118 +70,19 @@ public static class Benchmark
         return results;
     }
 
-    public static void PrintResults(List<BenchmarkResult> results)
-    {
-        
-        // #print the results
-        Console.ForegroundColor = ConsoleColor.Magenta;
-        Console.WriteLine("Results:");
-        Console.ResetColor();
-
-        foreach (BenchmarkResult result in results)
-        {
-            // iterate through the results dictionary and print the time taken to sort the arrays for each file
-            // print each individual algorithms performance of the InputFile object
-            // By using my custom ToReadableString() extension method, the time taken to sort the arrays
-            // is printed in a human-readable format
-            
-            // NOTE: if memory usage is reading 0, then memory usage is negligable. Such low amounts of memory
-            // usage cannot be accurately measured using the GC.GetTotalMemory() method. Such is the case when
-            // the optimised partially sorted array is sorted, as only 1 swap is made. Very little memory is used and hard to measure.
-            string algorithmType = result.FileProperties.GetType().Name == "OptimisedAlgorithms" ? "(Optimised)" : "(Basic)";
-
-            Console.Write($"{result.AlgorithmName} {algorithmType} took ");
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Write($"{result.ExecutionTime.ToReadableString()} ");
-            Console.ResetColor();
-            Console.WriteLine($"to sort {result.FileProperties.FileName}");
-            Console.ForegroundColor = ConsoleColor.Gray;
-            // print the memory usage of the algorithm (and if 0: then usage was too low to measure) often the 
-            // GC.GetTotalMemory() method will round down to 0 when the memory usage is very low (under 4096 bytes)
-            // cyberj0g. (2015, July 23). Answer to “GC.GetTotalMemory minimal resolution” [Online post]. Stack Overflow. https://stackoverflow.com/a/31581701
-            Console.WriteLine(result.MemoryUsage == 0
-                ? "Memory usage: Negligible/Unmeasurable" //else print the memory usage in bytes:
-                : $"Memory usage: {result.MemoryUsage.ToReadableString()}");
-            Console.ResetColor();
-        }
-        
-        // #### TODO ##### fix this to the new implementation ((uncomment the code below))
-        // Console.ForegroundColor = ConsoleColor.Yellow;
-        // //with the swap flag:
-        // Console.WriteLine($"BubbleSort of {file1.FileName} with the swap flag performance boost:\n {results.Keys.Where(k => k.Contains("swap optimization"))}ms");
-        // //without the swap flag:
-        // Console.WriteLine($"BubbleSort of {file1.FileName} with no swap checker: \n {BubbleSortBasic1Time}ms");
-        // Console.ForegroundColor = ConsoleColor.Red;
-        // //with the swap flag:
-        // Console.WriteLine($"BubbleSort of {fileName2} with the swap flag performance boost:\n {BubbleSort2Time}ms");
-        // //without the swap flag:
-        // Console.WriteLine($"BubbleSort of {fileName2} with no swap checker: \n {BubbleSortBasic2Time}ms");
-        // Console.ResetColor();
-        // // print new line for the next comparison statement
-        // Console.WriteLine();
-        //
-        // long file1Time;
-        // long file2Time;
-        //
-        // //#################################################################
-        // Console.ForegroundColor = ConsoleColor.Yellow;
-        // // File 1's algorithms comparison
-        // Console.Write(fileName1);
-        // if (BubbleSort1Time < BubbleSortBasic1Time)
-        // {
-        //     // Swap flag is faster:
-        //     Console.Write($" swap checker increased speed by {BubbleSortBasic1Time - BubbleSort1Time}ms");
-        //     file1Time = BubbleSort1Time;
-        // }
-        // else
-        // {
-        //     // Swap flag is slower:
-        //     Console.Write($" beat its swap checker algorithm by {BubbleSort1Time - BubbleSortBasic1Time}ms");
-        //     file1Time = BubbleSortBasic1Time;
-        // }
-        //
-        // // print new line for the next comparison statement
-        // Console.WriteLine();
-        //
-        // //#################################################################
-        // Console.ForegroundColor = ConsoleColor.Red;
-        // // File 2's algorithms comparison
-        // Console.Write(fileName2);
-        // if (BubbleSort2Time < BubbleSortBasic2Time)
-        // {
-        //     // file 2 (partially sorted list)
-        //     Console.Write($" swap checker increased speed by {BubbleSortBasic2Time - BubbleSort2Time}ms");
-        //     file2Time = BubbleSort2Time;
-        // }
-        // else
-        // {
-        //     // file 1 (random list)
-        //     Console.Write($" beat its swap checker algorithm by {BubbleSort2Time - BubbleSortBasic2Time}ms");
-        //     file2Time = BubbleSortBasic2Time;
-        // }
-        //
-        // // print new line for the next comparison statement
-        // Console.WriteLine();
-        //
-        // if (file2Time < file1Time)
-        //     // file 2 (partially sorted list)
-        //     Console.WriteLine($"{fileName2} performed {file1Time - file2Time}ms faster");
-        // else
-        //     // file 1 (random list)
-        //     Console.WriteLine($"{fileName1} performed {file2Time - file1Time}ms faster");
-        //
-        // Console.ResetColor();
-    }
 
     private static BenchmarkResult MeasureAlgorithm(AlgorithmType algorithmName, InputFile inputFile, Action runAlgorithm)
     {
-        // algorithmName = inputFile is OptimisedAlgorithms ? $"{algorithmName} (Optimised)" : algorithmName;
         Stopwatch sw = new();
         TimeSpan duration;
 
         // method to measure and run the bubble sort algorithm on the input file with memory usage
         BenchmarkResult RunAndMeasure()
         {
+            // Copy the contents of the file to an array of integers to be sorted and convert to integers.
+            // this will also remove any bad characters from the file and reset the array for each algorithm
+            inputFile.Parse(inputFile.FilePath);
+            
             // Because this method is run in a no GC (garbage collection) region, must set the forceFullCollection parameter to false, otherwise
             // the NoGC region will be ended and/or the method will not return until G/Collection occurs. Error will be thrown when trying to end the region
             // dotnet-bot. (n.d.). GC.GetTotalMemory Method (System). Retrieved November 7, 2024, from https://learn.microsoft.com/en-us/dotnet/api/system.gc.gettotalmemory?view=net-8.0
@@ -229,7 +130,7 @@ public static class Benchmark
         {
             // catch no GC region start failure by measuring only the time taken to sort the array
             sw.Start();
-            inputFile.BubbleSort();
+            runAlgorithm();
             sw.Stop();
             duration = sw.Elapsed;
             sw.Reset();            
