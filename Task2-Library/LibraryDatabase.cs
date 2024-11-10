@@ -36,6 +36,14 @@ public sealed class LibraryDatabase
             new Book("Harry Potter and the Philosophers Stone", "J.K rowling", "Fantasy"),
             new Book("Brave New World", "Aldous Huxley", "Sci-Fi"),
             new Book("Lord of the Flies", "William Golding", "Psychological"),
+            new Book("To Kill a Mockingbird", "Harper Lee", "Fiction"),
+            new Book("Pride and Prejudice", "Jane Austen", "Romance"),
+            new Book("The Great Gatsby", "F. Scott Fitzgerald", "Fiction"),
+            new Book("War and Peace", "Leo Tolstoy", "Historical"),
+            new Book("Crime and Punishment", "Fyodor Dostoevsky", "Psychological"),
+            new Book("The Catcher in the Rye", "J.D. Salinger", "Fiction"),
+            new Book("The Odyssey", "Homer", "Epic"),
+            new Book("Ulysses", "James Joyce", "Epic"),
         };
 
         BookCatalogue = new Dictionary<int, Book>();
@@ -73,8 +81,9 @@ public sealed class LibraryDatabase
             }
         }
     }
-
-    public static Dictionary<int, Book> GetBooks()
+    
+    // method to return the books in the library
+    public Dictionary<int, Book> GetBooks()
     {
         return BookCatalogue;
     }
@@ -98,12 +107,26 @@ public sealed class LibraryDatabase
             // to keep track of borrowed books in the borrowed array as per the requirements
             // of task 2 step 2.2
             int id = BookCatalogue.FirstOrDefault(x => x.Value.Equals(book)).Key;
+            
+            // stop the user from borrowing the same book twice by checking if the book is already on loan
+            if (BooksOnLoan.Contains(id))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("This book is already on loan.");
+                Console.ResetColor();
+                return;
+            }
+            
             Books.Remove(book);
             // assign the book to the name of the borrower
             book.Borrower = borrower;
             // Add the book id to the array of loaned books, the index/number will correspond to the book
             // in the library catalogue to keep track of the loan status of the book
             BooksOnLoan[id] = id;
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine($"Successfully borrowed: {book.Title}");
+        Console.ResetColor();
+            
         }
     }
 
@@ -127,7 +150,8 @@ public sealed class LibraryDatabase
             // foreach (int id in BooksOnLoan), the corresponding id number is
             // identified in the library catalogue to print it's information to the user
         {
-            if (id != 0)
+            if (id != 0 && BookCatalogue[id].Borrower.Username == user.Username)
+                // check if the book is on loan and also belongs to the logged in user
             {
                 Console.ForegroundColor = ConsoleColor.Magenta;
                 Console.WriteLine("You have Borrowed:\n" + BookCatalogue[id]);

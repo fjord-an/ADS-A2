@@ -5,7 +5,6 @@ public class Book
     public string Title { get; set; }
     public string Author { get; set; }
     public string Genre { get; set; }
-    public bool OnLoan { get; set; }
     public User Borrower { get; set; }
     public DateTime DueDate { get; set; }
     
@@ -14,7 +13,6 @@ public class Book
         Title = title;
         Author = author;
         Genre = genre;
-        OnLoan = false;
         Borrower = null;
         DueDate = DateTime.Now + new TimeSpan(14, 0, 0, 0);
     }
@@ -30,7 +28,7 @@ public class Book
     
     public string ToCatalogueString()
     {
-        return $"{Title},{Author},{Genre},{OnLoan},{Borrower},{DueDate}";
+        return $"{Title},{Author},{Genre},{Borrower},{DueDate}";
     }
     
     // public static Book FromFileString(string fileString)

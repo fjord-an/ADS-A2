@@ -4,7 +4,7 @@ public static class Authentication
 {
     public static List<User> Users = new List<User>
     {
-        new User("user", "password")
+        new User("user")
     };
     
     public static User Login()
@@ -32,6 +32,13 @@ public static class Authentication
             Console.WriteLine("User not found. Please try again. (enter 'user' for the default account)");
             return Login();
         }
+    }
+    
+    public static User Logout(User user)
+    {
+        user.SignedIn = false;
+        Console.WriteLine("You have been logged out.");
+        return Login();
     }
     
     public static string GetUsername()
@@ -69,10 +76,8 @@ public static class Authentication
             break;
         } while (true);
 
-        Console.WriteLine("Enter a password:");
-        string password = Console.ReadLine();
 
-        User newUser = new User(username, password);
+        User newUser = new User(username);
         Users.Add(newUser);
         
         Console.WriteLine("Sign up successful! Please log in.");

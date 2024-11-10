@@ -2,8 +2,10 @@ namespace Library;
 
 public class LibraryFunctions
 {
-    public static void ListUserBooks(User borrower) =>
+    public static void ListUserBooks(User borrower)
+    {
         LibraryDatabase.Instance.ListBooksOnLoan(borrower);
+    }
 
     public static void ReturnBook(User borrower)
     {
@@ -59,30 +61,14 @@ public class LibraryFunctions
         }
     }
 
-    // overload for returning a specific book by ID
-    public static void BorrowBook(User borrower) =>
-        LibraryFunctions.BorrowBook(borrower, false);
-
-    // overload for selecting a book from search results
     public static void BorrowBook(User borrower, bool selectBook)
     {
+        // Search for books to borrow, starting a serach with the option to select a book
+        // to borrow with selectBook argument set to true
         Book? book = SearchForBook(selectBook);
         if (book != null)
         {
             LibraryDatabase.Instance.LoanBook(book, borrower);
-        }
-    }
-
-    public static void ListAllBooks(User borrower)
-    {
-        Book? book = SearchForBook(selectBook: true);
-        if (book != null)
-        {
-            LibraryDatabase.Instance.LoanBook(book, borrower);
-        }
-        else
-        {
-            Console.WriteLine("Book not found");
         }
     }
 
@@ -118,6 +104,14 @@ public class LibraryFunctions
             Console.WriteLine("\nMatching books found:");
             foreach (var (id, book) in matches)
             {
+                if (book.Borrower != null)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write("On loan - ");
+                }
+                else
+                    Console.ForegroundColor = ConsoleColor.Green;
+                
                 Console.WriteLine($"ID: {id} - {book}");
             }
             Console.ResetColor();
@@ -167,7 +161,13 @@ public class LibraryFunctions
             var book = LibraryDatabase.Instance.SearchById(id);
             if (book != null)
             {
-                Console.ForegroundColor = ConsoleColor.Green;
+                if (book.Borrower != null)
+                {
+                    Console.Write("On loan - ");
+                    Console.ForegroundColor = ConsoleColor.Red;
+                }
+                else
+                    Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine($"\nBook found: ID: {id} - {book}");
                 Console.ResetColor();
                 return book;
@@ -182,7 +182,7 @@ public class LibraryFunctions
 
     private static Book? ListAllBooks(bool selectBook = false)
     {
-        var books = LibraryDatabase.GetBooks();
+        var books = LibraryDatabase.Instance.GetBooks();
 
         if (books.Any())
         {
@@ -190,7 +190,16 @@ public class LibraryFunctions
             Console.WriteLine("\nAll books in library:");
             foreach (var (id, book) in books)
             {
+                if (book.Borrower != null)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write("On loan - ");
+                }
+                else
+                    Console.ForegroundColor = ConsoleColor.Green;
+                
                 Console.WriteLine($"ID: {id} - {book}");
+                Console.ResetColor();
             }
             Console.ResetColor();
 

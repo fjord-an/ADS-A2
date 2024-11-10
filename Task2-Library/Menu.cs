@@ -31,6 +31,11 @@ public class Menu()
                     LibraryFunctions.BorrowBook(borrower, true);
                     break;
                 case 5:
+                    // logout the user and return to the login screen
+                    // also update the borrower object to the new user
+                    borrower = Authentication.Logout(borrower);
+                    break;
+                case 6:
                     Environment.Exit(69);
                     break;
                 default:
@@ -44,7 +49,7 @@ public class Menu()
         """
         1) List all books you have on loan
         2) Return a book
-        3) List all books in the library
+        3) Search the Library Catalogue
         4) Borrow a book
         5) Exit 
         """;
