@@ -5,8 +5,59 @@ public class LibraryFunctions
     public static void ListUserBooks(User borrower) =>
         LibraryDatabase.Instance.ListBooksOnLoan(borrower);
 
-    public static void ReturnBook(User borrower) =>
-        LibraryDatabase.Instance.ReturnBook(LibraryDatabase.Instance.SearchByIndex(Console.ReadLine()));
+    public static void ReturnBook(User borrower)
+    {
+        var booksOnLoan = LibraryDatabase.Instance.GetBooksOnLoan(borrower);
+        // int[] booksOnLoan;
+        
+        if (!booksOnLoan.Any())
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("You don't have any books to return.");
+            Console.ResetColor();
+            return;
+        }
+
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine("\nYour borrowed books:");
+        foreach (var (id, book) in booksOnLoan)
+        {
+            Console.WriteLine($"ID: {id} - {book}");
+        }
+        Console.ResetColor();
+
+        Console.WriteLine("\nEnter the ID of the book you want to return (or press Enter to cancel):");
+        string input = Console.ReadLine();
+        
+        if (string.IsNullOrEmpty(input)) return;
+        
+        if (int.TryParse(input, out int bookId))
+        {
+            if (booksOnLoan.Any(b => b.Item1 == bookId))
+            {
+                var book = LibraryDatabase.Instance.SearchById(bookId);
+                if (book != null)
+                {
+                    LibraryDatabase.Instance.ReturnBook(book);
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine($"Successfully returned: {book.Title}");
+                    Console.ResetColor();
+                }
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Invalid book ID. Please try again.");
+                Console.ResetColor();
+            }
+        }
+        else
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Invalid input. Please enter a valid book ID.");
+            Console.ResetColor();
+        }
+    }
 
     public static void BorrowBook(User borrower) =>
         LibraryFunctions.BorrowBook(borrower, false);
@@ -19,11 +70,6 @@ public class LibraryFunctions
             LibraryDatabase.Instance.LoanBook(book, borrower);
         }
     }
-
-    // public static void ReturnBook(User borrower)
-    // {
-    //     LibraryDatabase.Instance.ListBooks();
-    // }
 
     public static void ListAllBooks(User borrower)
     {

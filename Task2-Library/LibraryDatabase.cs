@@ -9,13 +9,14 @@ public sealed class LibraryDatabase
     // lock object to ensure only one instance of the database is created
     // and data integrity is maintained at all times:
     private static LibraryDatabase _instance;
+
     // an instance is created
     private static readonly object _lock = new object();
-    
+
     public List<Book> Books { get; private set; }
     public static Dictionary<int, Book> BookCatalogue { get; private set; }
     public static int[] BooksOnLoan { get; private set; }
-    
+
     // the instance is created in a private constructor, so it cannot be
     //  instantiated from outside the class
     private LibraryDatabase()
@@ -36,17 +37,18 @@ public sealed class LibraryDatabase
             new Book("Brave New World", "Aldous Huxley", "Sci-Fi"),
             new Book("Lord of the Flies", "William Golding", "Psychological"),
         };
-        
-         BookCatalogue = new Dictionary<int, Book>();
+
+        BookCatalogue = new Dictionary<int, Book>();
         // create a dictionary and assign an id to each book to reference for the catalogue.
         // the catalogue will keep track of all books belonging to the library, whether it is
         // present in the library or on loan.
-        for(int i = 1; i < Books.Count; i++)
+        for (int i = 1; i < Books.Count; i++)
         {
             Book book = Books[i - 1]; // calibrate zero-index
             BookCatalogue.Add(i, book); //assign an id to the book for the library catalogue
             // the book id will now be the same across the lists
         }
+
         // the array of id's that keep track of books that are on loan
         BooksOnLoan = new int[Books.Count];
     }
@@ -56,35 +58,27 @@ public sealed class LibraryDatabase
     // (third example in the article):
     // Implementing the Singleton Pattern in C#. (n.d.). Retrieved November 10, 2024, from https://csharpindepth.com/articles/singleton
     public static LibraryDatabase Instance
-    // *this method is used to access the instance of this class
+        // *this method is used to access the instance of this class
     {
-       get
-       {
-           lock (_lock)
-           {
-               if (_instance == null)
-               {
-                   _instance = new LibraryDatabase();
-               }
-               return _instance;
-           }
-       }
-    } 
-    
+        get
+        {
+            lock (_lock)
+            {
+                if (_instance == null)
+                {
+                    _instance = new LibraryDatabase();
+                }
+
+                return _instance;
+            }
+        }
+    }
+
     public static Dictionary<int, Book> GetBooks()
     {
         return BookCatalogue;
-    } 
-
-    public void ListBooks()
-    {
-        foreach (Book book in Books)
-        {
-            // print all books in the library with the override ToString method
-            // in the Book class
-            Console.WriteLine(book);
-        }
     }
+
 
     public Book? SearchById(int id)
     {
@@ -92,9 +86,10 @@ public sealed class LibraryDatabase
         {
             return book;
         }
+
         return null;
     }
-    
+
     public void LoanBook(Book book, User borrower)
     {
         if (BookCatalogue.ContainsValue(book))
@@ -106,7 +101,8 @@ public sealed class LibraryDatabase
             Books.Remove(book);
             // assign the book to the name of the borrower
             book.Borrower = borrower;
-            // Add the book id to the array of loaned books
+            // Add the book id to the array of loaned books, the index/number will correspond to the book
+            // in the library catalogue to keep track of the loan status of the book
             BooksOnLoan[id] = id;
         }
     }
@@ -114,7 +110,7 @@ public sealed class LibraryDatabase
     public void ReturnBook(Book book)
     {
         int id = BookCatalogue.FirstOrDefault(x => x.Value.Equals(book)).Key;
-        
+
         //todo need to set the book id to unique id not index, and compare id to the id in the dictionary:
         if (BookCatalogue.ContainsValue(book) && BooksOnLoan.Contains(id))
         {
@@ -123,12 +119,13 @@ public sealed class LibraryDatabase
             Books.Add(book);
         }
     }
-    
+
     public void ListBooksOnLoan(User user)
     {
         foreach (int id in BooksOnLoan.Where(id => id != 0))
-        // todo check implementation
-        // foreach (int id in BooksOnLoan)
+            // todo check implementation
+            // foreach (int id in BooksOnLoan), the corresponding id number is
+            // identified in the library catalogue to print it's information to the user
         {
             if (id != 0)
             {
@@ -138,7 +135,7 @@ public sealed class LibraryDatabase
             }
         }
     }
-    
+
     public Book SearchByIndex(string index)
     {
         if (int.TryParse(index, out int id))
@@ -147,19 +144,21 @@ public sealed class LibraryDatabase
             {
                 Console.WriteLine($"{book.Key}: {book.Value}");
             }
+
             if (BookCatalogue.TryGetValue(id, out var byIndex))
             {
                 return byIndex;
             }
         }
+
         return new Book("Book not Found", "null", "null");
     }
 
     public IEnumerable<(int, Book)> SearchByKeyword(string keyword)
     {
         return BookCatalogue
-            .Where(kvp => 
-                kvp.Value.Title.Contains(keyword, StringComparison.OrdinalIgnoreCase) || 
+            .Where(kvp =>
+                kvp.Value.Title.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
                 kvp.Value.Author.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
                 kvp.Value.Genre.Contains(keyword, StringComparison.OrdinalIgnoreCase))
             .Select(kvp => (kvp.Key, kvp.Value));
@@ -174,8 +173,22 @@ public sealed class LibraryDatabase
 
     public IEnumerable<(int, Book)> SearchByGenre(string genre)
     {
+        // filter the library catalogue for books by genre using LINQ
         return BookCatalogue
             .Where(kvp => kvp.Value.Genre.Contains(genre, StringComparison.OrdinalIgnoreCase))
             .Select(kvp => (kvp.Key, kvp.Value));
+    }
+
+    public IEnumerable<(int, Book)> GetBooksOnLoan(User user)
+    {
+        // IEnumerable interface to return a collection of books on loan
+        // that belong to the user. IEnumberable is more flexible for iterating over collections.
+        // the method uses LINQ to query the BooksOnLoan array,  to find books that are on loan
+        // and belong to the user (by referencing the LibraryDatabase BookCatalogue dictionary, which
+        // contains the status of the books in the library). using Where to filter the books that are on loan
+        // and belong to the user, and Select to return the book id and access its information using the id as the key
+        return BooksOnLoan
+            .Where(id => id != 0 && BookCatalogue[id].Borrower.Username == user.Username)
+            .Select(id => (id, BookCatalogue[id]));
     }
 }

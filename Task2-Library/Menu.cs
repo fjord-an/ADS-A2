@@ -2,19 +2,6 @@ namespace Library;
 
 public class Menu()
 {
-    
-    public static void Display(double option)
-    {
-
-        static void ListBooks()
-        {
-            foreach (Book book in LibraryDatabase.Instance.Books)
-            {
-                Console.WriteLine(book.Title);
-            }
-        }
-    }
-
     public static void Input(User borrower)
     {
         while (true)

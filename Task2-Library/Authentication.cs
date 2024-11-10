@@ -9,8 +9,18 @@ public static class Authentication
     
     public static User Login()
     {
+        Console.WriteLine("1) Login");
+        Console.WriteLine("2) Sign Up");
+        Console.Write("Choose an option: ");
+        
+        string choice = Console.ReadLine();
+        
+        if (choice == "2")
+        {
+            return SignUp();
+        }
+        
         string username = GetUsername();
-        string password = GetPassword();
         User user = Users.Find(u => u.Username == username);
         if (VerifyUser(user))
         {
@@ -19,7 +29,7 @@ public static class Authentication
         }
         else
         {
-            Console.WriteLine("Login failed. Please try again. (Use 'user' and 'password' as default)");
+            Console.WriteLine("User not found. Please try again. (enter 'user' for the default account)");
             return Login();
         }
     }
@@ -30,26 +40,42 @@ public static class Authentication
         return Console.ReadLine();
     }
 
-    public static string GetPassword()
-    {
-        Console.WriteLine("Enter your password:");
-        return Console.ReadLine();
-    }
-
     public static bool VerifyUser(User user)
     {
         if (Users.Contains(user))
         {
-            if (user.Password == Users.Find(u => u.Username == user.Username).Password)
-            {
-                // if the linq expression finds a user with a mathing username and password, return true
-                // password is just a string for now, but in a real application, it would be hashed
-                user.SignedIn = true;
-                return true;
-            }
-            // if the linq expression finds a user with a matching username but not password, return false
-            return false;
+            // if the linq expression finds a user with a mathing username and password, return true
+            // password is just a string for now, but in a real application, it would be hashed
+            user.SignedIn = true;
+            return true;
         }
         return false;
+    }
+
+    public static User SignUp()
+    {
+        Console.WriteLine("=== Sign Up ===");
+        string username;
+        do
+        {
+            Console.WriteLine("Enter a new username:");
+            username = Console.ReadLine();
+            
+            if (Users.Any(u => u.Username == username))
+            {
+                Console.WriteLine("Username already exists. Please choose another.");
+                continue;
+            }
+            break;
+        } while (true);
+
+        Console.WriteLine("Enter a password:");
+        string password = Console.ReadLine();
+
+        User newUser = new User(username, password);
+        Users.Add(newUser);
+        
+        Console.WriteLine("Sign up successful! Please log in.");
+        return Login();
     }
 }
