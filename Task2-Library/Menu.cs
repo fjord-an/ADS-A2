@@ -28,7 +28,7 @@ public class Menu()
                     LibraryFunctions.SearchForBook();
                     break;
                 case 4:
-                    LibraryFunctions.BorrowBook(borrower);
+                    LibraryFunctions.BorrowBook(borrower, true);
                     break;
                 case 5:
                     Environment.Exit(69);

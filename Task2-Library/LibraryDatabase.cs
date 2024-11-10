@@ -156,6 +156,10 @@ public sealed class LibraryDatabase
 
     public IEnumerable<(int, Book)> SearchByKeyword(string keyword)
     {
+        // return a collection of books that contain the keyword in the title, author or genre
+        // using Where to filter the library catalogue for books that contain the keyword
+        // with StringComparison.OrdinalIgnoreCase to ignore case sensitivity for flexible searching.
+        // Select is used to return the book id and access the book information using the id as the key
         return BookCatalogue
             .Where(kvp =>
                 kvp.Value.Title.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
@@ -166,6 +170,7 @@ public sealed class LibraryDatabase
 
     public IEnumerable<(int, Book)> SearchByAuthor(string author)
     {
+        // filter the library catalogue for books by author using LINQ
         return BookCatalogue
             .Where(kvp => kvp.Value.Author.Contains(author, StringComparison.OrdinalIgnoreCase))
             .Select(kvp => (kvp.Key, kvp.Value));

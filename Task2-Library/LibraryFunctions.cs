@@ -59,9 +59,11 @@ public class LibraryFunctions
         }
     }
 
+    // overload for returning a specific book by ID
     public static void BorrowBook(User borrower) =>
         LibraryFunctions.BorrowBook(borrower, false);
 
+    // overload for selecting a book from search results
     public static void BorrowBook(User borrower, bool selectBook)
     {
         Book? book = SearchForBook(selectBook);
@@ -122,7 +124,7 @@ public class LibraryFunctions
 
             if (selectBook)
             {
-                Console.WriteLine("\nEnter the ID of the book you want to select (or press Enter to cancel):");
+                Console.WriteLine("\nEnter the ID of the book you want to borrow (or press Enter to cancel):");
                 string selection = Console.ReadLine();
                 if (int.TryParse(selection, out int selectedId))
                 {
