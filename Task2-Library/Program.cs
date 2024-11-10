@@ -4,7 +4,8 @@
     {
         public static void Main(string[] args)
         {
-            Menu.Input();
+            User user = Authentication.Login();
+            Menu.Input(user);
         }
     }
 }

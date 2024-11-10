@@ -8,21 +8,20 @@ public class Menu()
 
         static void ListBooks()
         {
-            //foreach
+            foreach (Book book in LibraryDatabase.Instance.Books)
+            {
+                Console.WriteLine(book.Title);
+            }
         }
     }
 
-    public static void Input()
+    public static void Input(User borrower)
     {
-        bool validInput;
         while (true)
         {
-            // print the options before requesting input
             Console.WriteLine(MainMenu());
             
-            // if the input is invalid (not a number), try again (restart the loop => continue)
-            // else output the value to the variable: input
-            if (!(validInput = double.TryParse(Console.ReadLine(), out double input)))
+            if (!(double.TryParse(Console.ReadLine(), out double input)))
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Invalid input, enter the number corresponding to the desired action:");
@@ -30,34 +29,30 @@ public class Menu()
                 continue;
             }
 
-            double choice;
             switch (input)
             {
                 case 1:
-                        // list all books on loan
+                    LibraryFunctions.ListUserBooks(borrower);
                     break;
                 case 2:
-                    // return a book
+                    LibraryFunctions.ReturnBook(borrower);
                     break;
                 case 3:
-                    // list all books in the library
-                break;
+                    LibraryFunctions.SearchForBook();
+                    break;
                 case 4:
-                    //Borrow a book
+                    LibraryFunctions.BorrowBook(borrower);
                     break;
                 case 5:
-                    //exit
                     Environment.Exit(69);
                     break;
                 default:
                     Console.WriteLine(MainMenu());
                     break;
             }
-            
-            return;
         }
     }
-    
+
     static string MainMenu() =>
         """
         1) List all books you have on loan
@@ -66,7 +61,4 @@ public class Menu()
         4) Borrow a book
         5) Exit 
         """;
-    
-    //static !xx?IEnumerable<string> ListBooks(books) => foreach(book in books){List<string> }
-    // what type?
 }
