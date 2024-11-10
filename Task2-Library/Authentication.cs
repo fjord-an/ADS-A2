@@ -70,6 +70,7 @@ public static class Authentication
             Console.WriteLine("Enter a new username:");
             username = Console.ReadLine();
             
+            // use linq to check if the username already exists in the list of users
             if (Users.Any(u => u.Username == username))
             {
                 Console.WriteLine("Username already exists. Please choose another.");

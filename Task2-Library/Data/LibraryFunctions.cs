@@ -92,6 +92,12 @@ public class LibraryFunctions
 
     private static Book? SearchBooks(
         string prompt,
+        
+        // Function to search for books based on a search term
+        // using a delegate function to search the library catalogue
+        // taking a string search term and returning a list of books
+        // with its ID in a tuple (Func<param, return>). this simplifies
+        // the search functions and allows for code reuse
         Func<string, IEnumerable<(int, Book)>> searchFunction,
         bool selectBook = false)
     {
@@ -100,6 +106,8 @@ public class LibraryFunctions
 
         var matches = searchFunction(searchTerm);
 
+        // Display the matching books found in the library catalogue from
+        // the search term
         if (matches.Any())
         {
             Console.ForegroundColor = ConsoleColor.Green;
@@ -190,6 +198,7 @@ public class LibraryFunctions
         {
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("\nAll books in library:");
+            // Display all books in the library catalogue and indicate if they are on loan
             foreach (var (id, book) in books)
             {
                 if (book.Borrower != null)
@@ -224,6 +233,7 @@ public class LibraryFunctions
         return null;
     }
 
+    // Sub-menu options for searching the library catalogue
     private static string GetSearchOptions() =>
         """
         1) search by keyword

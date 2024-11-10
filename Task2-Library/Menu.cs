@@ -11,6 +11,7 @@ public class Menu()
         {
             Console.WriteLine(MainMenu());
             
+            // if the input is not a number, print an error message and continue the loop
             if (!(double.TryParse(Console.ReadLine(), out double input)))
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -54,6 +55,7 @@ public class Menu()
         2) Return a book
         3) Search the Library Catalogue
         4) Borrow a book
-        5) Exit 
+        5) Logout
+        6) Exit the Program
         """;
 }

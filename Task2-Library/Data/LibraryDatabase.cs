@@ -160,24 +160,6 @@ public sealed class LibraryDatabase
         }
     }
 
-    public Book SearchByIndex(string index)
-    {
-        if (int.TryParse(index, out int id))
-        {
-            foreach (KeyValuePair<int, Book> book in BookCatalogue)
-            {
-                Console.WriteLine($"{book.Key}: {book.Value}");
-            }
-
-            if (BookCatalogue.TryGetValue(id, out var byIndex))
-            {
-                return byIndex;
-            }
-        }
-
-        return new Book("Book not Found", "null", "null");
-    }
-
     public IEnumerable<(int, Book)> SearchByKeyword(string keyword)
     {
         // return a collection of books that contain the keyword in the title, author or genre

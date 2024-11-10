@@ -30,14 +30,4 @@ public class Book
     {
         return $"{Title},{Author},{Genre},{Borrower},{DueDate}";
     }
-    
-    // public static Book FromFileString(string fileString)
-    // {
-    //     string[] parts = fileString.Split(',');
-    //     Book book = new Book(parts[0], parts[1], parts[2]);
-    //     book.OnLoan = bool.Parse(parts[3]);
-    //     book.Borrower = parts[4];
-    //     book.DueDate = DateTime.Parse(parts[5]);
-    //     return book;
-    // }
 }
