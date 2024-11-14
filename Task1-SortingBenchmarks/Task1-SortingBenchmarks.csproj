@@ -8,4 +8,11 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <None Include="bin\Debug\net8.0\partially_sorted_numbers.txt" />
+      <None Include="bin\Debug\net8.0\unsorted_numbers.txt" />
+      <None Include="obj\Debug\net8.0\partially_sorted_numbers.txt" />
+      <None Include="obj\Debug\net8.0\unsorted_numbers.txt" />
+    </ItemGroup>
+
 </Project>

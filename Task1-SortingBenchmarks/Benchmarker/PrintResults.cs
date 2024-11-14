@@ -79,12 +79,11 @@ public static class PrintResults
                 : bestMergeSortMemory;
 
             // Print the comparison results for the current file
-            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine(
                 $"Fastest Algorithm: {fastestAlgorithm.AlgorithmName} ({fastestAlgorithm.FileProperties.GetType().Name}) with time {fastestAlgorithm.ExecutionTime.ToReadableString()}");
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.WriteLine(
-                $"Least Memory Usage Algorithm: {leastMemoryAlgorithm.AlgorithmName} ({leastMemoryAlgorithm.FileProperties.GetType().Name}) with memory usage {leastMemoryAlgorithm.MemoryUsage.ToReadableString()}");
+                $"Least Memory Usage Algorithm: {leastMemoryAlgorithm.AlgorithmName} ({leastMemoryAlgorithm.FileProperties.GetType().Name}) with memory usage {(leastMemoryAlgorithm.MemoryUsage.ToReadableString() == "0 bytes" ? "Negligible" : leastMemoryAlgorithm.MemoryUsage.ToReadableString())}");
             Console.WriteLine();
             Console.ResetColor();
         }

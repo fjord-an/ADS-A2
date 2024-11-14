@@ -11,7 +11,7 @@ public abstract class InputFile
         public string[] Contents {get; private set;}
         public int[] Numbers { get; private set; }
         // TODO need to change base directory in accordance with replit's VM file structure and base directory
-        private static readonly string BaseDirectory = Path.GetFullPath("../../../Input/");
+        private static readonly string BaseDirectory = Path.GetFullPath(".");
         public BenchmarkResult AlgorithmPerformances { get; set; }
 
 
